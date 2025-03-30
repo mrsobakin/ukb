@@ -12,25 +12,25 @@ static Display *_display = 0;
 static ukb_err_t update_current_layout() {
 	XkbStateRec xkbState;
 	if (XkbGetState(_display, XkbUseCoreKbd, &xkbState) != Success) {
-		UKB_ERR("Failed to get keyboard state.");
+    	UKB_ERR("Failed to get keyboard state.");
 	}
 
 	XkbDescPtr descPtr = XkbGetKeyboard(_display, XkbAllComponentsMask, XkbUseCoreKbd);
 	if (!descPtr) {
-    	UKB_ERR("Failed to get keyboard description.");
-  	}
+		UKB_ERR("Failed to get keyboard description.");
+	}
 	if (!descPtr->names) {
-    	UKB_ERR("Failed to get keyboard names.");
+		UKB_ERR("Failed to get keyboard names.");
 	}
 
 	Status ErrorGetControls = XkbGetControls(_display, XkbAllComponentsMask, descPtr);
 	if (ErrorGetControls != Success || !descPtr->ctrls) {
-    	UKB_ERR("Failed to get keyboard controls.");
+		UKB_ERR("Failed to get keyboard controls.");
 	}
 
 	int num_groups = descPtr->ctrls->num_groups;
 	if (xkbState.group >= num_groups) {
-    	UKB_ERR("Group index out of range.");
+		UKB_ERR("Group index out of range.");
 	}
 
 	char *namePtr = XGetAtomName(_display, descPtr->names->groups[xkbState.group]);
@@ -67,41 +67,46 @@ static ukb_err_t xorg_wait_event() {
 /********************************* BACKEND ***********************************/
 
 static bool xorg_can_use(void) {
-	_display = XOpenDisplay(NULL);
-	return _display != NULL;
+	int eventCode;
+	int errorReturn;
+	int major = XkbMajorVersion;
+	int minor = XkbMinorVersion;
+	int reasonReturn;
+	_display = XkbOpenDisplay(NULL, &eventCode, &errorReturn, &major, &minor, &reasonReturn);
+	XCloseDisplay(_display);
+	return reasonReturn == XkbOD_Success;
 }
 
 static ukb_err_t xorg_listen(ukb_layout_cb_t cb) {
-	char *displayName = strdup("");
 	int eventCode;
 	int errorReturn;
 	int major = XkbMajorVersion;
 	int minor = XkbMinorVersion;
 	int reasonReturn;
 
-	_display = XkbOpenDisplay(displayName, &eventCode, &errorReturn, &major, &minor, &reasonReturn);
-	free(displayName);
-  
+	_display = XkbOpenDisplay(NULL, &eventCode, &errorReturn, &major, &minor, &reasonReturn);
+
 	switch (reasonReturn) {
 	case XkbOD_Success:
-    	break;
+		break;
 	case XkbOD_BadLibraryVersion:
-    	UKB_ERR("Bad XKB library version.");
+		UKB_ERR("Bad XKB library version.");
 	case XkbOD_ConnectionRefused:
-    	UKB_ERR("Connection to X server refused.");
+		UKB_ERR("Connection to X server refused.");
 	case XkbOD_BadServerVersion:
-    	UKB_ERR("Bad X11 server version.");
+		UKB_ERR("Bad X11 server version.");
 	case XkbOD_NonXkbServer:
-    	UKB_ERR("XKB not present.");
+		UKB_ERR("XKB not present.");
 	default:
-    	UKB_ERR("XKB refused to open the display.");
+		UKB_ERR("XKB refused to open the display.");
 	}
 
 	while (1) {
-		xorg_wait_event();
-		update_current_layout();
+		UKB_PROPAGATE(xorg_wait_event());
+		UKB_PROPAGATE(update_current_layout());
 		cb(current_layout);
 	}
+	XCloseDisplay(_display);
 }
 
 const ukb_backend_t ukb_backend_xorg = {
