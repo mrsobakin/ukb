@@ -1,11 +1,14 @@
+#include <stdbool.h>
+#include <string.h>
 #include <X11/XKBlib.h>
 #include <X11/Xlib.h>
-#include <string.h>
 
-#include "../utils.h"
 #include "ukb.h"
+#include "../utils.h"
+
 
 static char current_layout[128] = {0};
+
 
 static Display *x_display = 0;
 
