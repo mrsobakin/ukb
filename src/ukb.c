@@ -13,7 +13,7 @@
 
 #define UKB_BACKENDS(M) \
     M(ukb_backend_sway) \
-    M(ukb_backend_xrog)
+    M(ukb_backend_xorg)
 
 /*****************************************************************************/
 
