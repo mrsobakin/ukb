@@ -54,7 +54,7 @@ static ukb_err_t update_current_layout() {
 static ukb_err_t xorg_wait_event() {
     Bool bret = XkbSelectEventDetails(x_display, XkbUseCoreKbd, XkbStateNotify, XkbAllStateComponentsMask, XkbGroupStateMask);
     if (!bret) {
-        UKB_ERR("XkbSelectEventDetails failed")
+        UKB_ERR("XkbSelectEventDetails failed");
     }
 
     XEvent event;
