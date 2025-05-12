@@ -32,7 +32,7 @@ static ukb_err_t update_current_layout() {
     }
 
     int num_groups = desc_ptr->ctrls->num_groups;
-    if (xkbState.group >= num_groups) {
+    if (xkb_state.group >= num_groups) {
         UKB_ERR("Group index out of range.");
     }
 

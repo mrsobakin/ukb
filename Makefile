@@ -1,7 +1,7 @@
 CC = gcc
 AR = ar
 
-DEPS = json-c
+DEPS = json-c x11
 
 CFLAGS   = -Iinclude -Wall -O2 $(shell pkg-config --cflags $(DEPS))
 LDFLAGS  = $(shell pkg-config --libs $(DEPS))
