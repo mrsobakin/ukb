@@ -59,7 +59,7 @@ static ukb_err_t xorg_wait_event() {
 
     XEvent event;
     int iret = XNextEvent(x_display, &event);
-    if (!iret) {
+    if (iret) {
         UKB_ERR("XNextEvent failed");
     }
 
