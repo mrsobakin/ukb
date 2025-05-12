@@ -89,6 +89,27 @@ static int xorg_open_display() {
 /********************************* BACKEND ***********************************/
 
 static bool xorg_can_use(void) {
+    // xkblib is pretty much useless when running under xwayland,
+    // so we'll try to detect xwayland with some simple heuristics.
+
+    const char* session = getenv("XDG_SESSION_TYPE");
+    if (session) {
+        if (strcmp(session, "wayland") == 0) {
+            return false;
+        }
+
+        if (strcmp(session, "x11") != 0) {
+            // require an additional check if session is neither wayland nor x11
+            session = NULL;
+        }
+    }
+
+    if (!session) {
+        if (getenv("WAYLAND_DISPLAY") != NULL) {
+            return false;
+        }
+    }
+
     int reason_return = xorg_open_display();
     XCloseDisplay(x_display);
     return reason_return == XkbOD_Success;
