@@ -37,22 +37,22 @@ typedef union header {
 
 
 static int sway_ipc_open(const char *socket_path) {
-	int socketfd;
-	if ((socketfd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
+    int socketfd;
+    if ((socketfd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
         return -1;
-	}
+    }
 
-	struct sockaddr_un addr = {
+    struct sockaddr_un addr = {
         .sun_family = AF_UNIX,
         .sun_path = {0},
     };
-	strncpy(addr.sun_path, socket_path, sizeof(addr.sun_path) - 1);
+    strncpy(addr.sun_path, socket_path, sizeof(addr.sun_path) - 1);
 
-	if (connect(socketfd, (struct sockaddr *)&addr, sizeof(struct sockaddr_un)) == -1) {
+    if (connect(socketfd, (struct sockaddr *)&addr, sizeof(struct sockaddr_un)) == -1) {
         return -1;
-	}
+    }
 
-	return socketfd;
+    return socketfd;
 }
 
 static bool sway_ipc_send(int fd, uint32_t type, uint32_t length, const char *data) {
