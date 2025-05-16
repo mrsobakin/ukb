@@ -80,7 +80,7 @@ static bool sway_ipc_recv(int fd, header_t *h, char **data) {
         left -= n;
     }
 
-    *data = (char*)malloc(h->fields.length);
+    *data = (char*)calloc(1, h->fields.length + 1);
     left = h->fields.length;
     dst = (uint8_t*)*data;
 
