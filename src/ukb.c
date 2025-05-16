@@ -11,9 +11,16 @@
 
 /********************************* BACKENDS **********************************/
 
+#if defined PLATFORM_LINUX
 #define UKB_BACKENDS(M) \
     M(ukb_backend_sway) \
     M(ukb_backend_xorg)
+#elif defined PLATFORM_WINDOWS
+#define UKB_BACKENDS(M) \
+    M(ukb_backend_windows)
+#else
+#error "No platform is set."
+#endif
 
 /*****************************************************************************/
 

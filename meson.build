@@ -11,7 +11,7 @@ deps = []
 platform = host_machine.system()
 
 if platform == 'linux'
-  add_project_arguments('-DPLATFORM=LINUX', language: ['c'])
+  add_project_arguments('-DPLATFORM_LINUX', language: ['c'])
   lib_src += files(
     'src/backends/sway.c',
     'src/backends/xorg.c',
@@ -20,6 +20,9 @@ if platform == 'linux'
     dependency('json-c', required: true),
     dependency('x11', required: true),
   ]
+elif platform == 'windows'
+  add_project_arguments('-DPLATFORM_WINDOWS', language: ['c'])
+  lib_src += files('src/backends/windows.c')
 else
   error('unknown platform: ' + platform)
 endif
