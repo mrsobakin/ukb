@@ -11,6 +11,7 @@
 
 static struct {
     bool silent;
+    bool list;
     const char* backend;
 } args;
 
@@ -20,6 +21,7 @@ static const char* usage =
     "  -h  show this help page\n"
     "  -s  be silent and don't print anything to stderr\n"
     "  -b  manually specify backend that should be used\n"
+    "  -l  list all registered backends and their availability\n"
     "      it will be used even if it is reported as unavailable\n"
     "";
 
@@ -28,9 +30,10 @@ void parse_args(int argc, char **argv) {
     int opt;
 
     args.silent = false;
+    args.list = false;
     args.backend = NULL;
 
-    while ((opt = getopt(argc, argv, "shb:")) != -1) {
+    while ((opt = getopt(argc, argv, "shb:l")) != -1) {
         switch (opt) {
             case 's':
                 args.silent = true;
@@ -38,6 +41,10 @@ void parse_args(int argc, char **argv) {
 
             case 'b':
                 args.backend = optarg;
+                break;
+
+            case 'l':
+                args.list = true;
                 break;
 
             case '?':
@@ -54,6 +61,22 @@ void parse_args(int argc, char **argv) {
 }
 
 
+void list_backends() {
+    printf("Registered backends:\n\n");
+
+    for (size_t i = 0; i < ukb_backends_number; ++i) {
+        const ukb_backend_t *b = ukb_backends[i];
+        if (ukb_backend_can_use(b)) {
+            printf("  * %s [available]\n", ukb_backend_name(b));
+        } else {
+            printf("  * %s\n", ukb_backend_name(b));
+        }
+    }
+
+    printf("\n");
+}
+
+
 void cb_print(const char* layout) {
     printf("%s\n", layout);
     fflush(stdout);
@@ -61,6 +84,11 @@ void cb_print(const char* layout) {
 
 int main(int argc, char **argv) {
     parse_args(argc, argv);
+
+    if (args.list) {
+        list_backends();
+        return 0;
+    }
 
     const ukb_backend_t *b;
 
