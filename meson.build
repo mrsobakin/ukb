@@ -30,18 +30,17 @@ endif
 
 install_headers('include/ukb.h', subdir: 'ukb')
 
-libukb_kwargs = {
-  'include_directories': inc,
-  'dependencies': deps,
-  'c_args': ['-DUKB_BACKENDS_INTERNAL'],
-  'install': true,
-}
-libukb_a = static_library('ukb', lib_src, kwargs: libukb_kwargs)
-libukb_so = shared_library('ukb', lib_src, kwargs: libukb_kwargs)
+libukb = both_libraries('ukb', lib_src,
+  include_directories: inc,
+  dependencies: deps,
+  c_args: ['-DUKB_BACKENDS_INTERNAL'],
+  install: true,
+  install_dir: get_option('libdir'),
+)
 
 
 executable('ukb', 'src/main.c',
   include_directories: inc,
-  link_with: libukb_a,
+  link_with: libukb.get_static_lib(),
   install: true,
 )

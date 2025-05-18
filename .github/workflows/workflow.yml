@@ -21,7 +21,11 @@ jobs:
 
       - name: Build (Linux)
         run: |
-          meson setup build.linux
+          meson setup build.linux \
+            --prefix=/ \
+            --libdir=/lib \
+            --buildtype=release \
+            --strip
           meson compile -C build.linux
           meson install -C build.linux --destdir=install
 
@@ -33,7 +37,7 @@ jobs:
           cpp = 'x86_64-w64-mingw32-g++'
           ar = 'x86_64-w64-mingw32-ar'
           strip = 'x86_64-w64-mingw32-strip'
-          pkgconfig = 'x86_64-w64-mingw32-pkg-config'
+          pkg-config = 'x86_64-w64-mingw32-pkg-config'
           exe_wrapper = ''
 
           [host_machine]
@@ -46,7 +50,10 @@ jobs:
           prefix = '/'
           EOF
 
-          meson setup build.win --cross-file mingw-cross.txt
+          meson setup build.win \
+            --cross-file mingw-cross.txt \
+            --buildtype=release \
+            --strip
           meson compile -C build.win
           meson install -C build.win --destdir=install
 
